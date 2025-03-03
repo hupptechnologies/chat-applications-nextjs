@@ -14,6 +14,7 @@ import { useToaster } from '../components/Toaster';
 // Define the shape of the context
 interface AuthContextType {
 	isAuthenticated: boolean;
+	loading: boolean;
 	user: { id: string; name: string; email: string } | null;
 	login: (_email: string, _password: string) => Promise<void>;
 	logout: () => void;
@@ -27,29 +28,22 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 	children,
 }) => {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [token, setToken] = useState<string | null>(null);
 	const [user, setUser] = useState<{
 		id: string;
 		name: string;
 		email: string;
 	} | null>(null);
+	const [loading, setLoading] = useState(true); // Initialize loading as true
 	const router = useRouter();
 	const { showToaster } = useToaster();
-
-	// Ensure localStorage is only accessed in the browser
-	useEffect(() => {
-		const getToken = localStorage.getItem('authToken');
-		if (getToken) {
-			setToken(getToken);
-		}
-	}, []);
 
 	// Check if the user is authenticated on initial load
 	useEffect(() => {
 		const checkAuth = async () => {
+			const token = localStorage.getItem('authToken');
 			if (token) {
 				try {
-					const userData = await fetchUsers(showToaster); // Pass showToaster to fetchUsers
+					const userData = await fetchUsers(showToaster);
 					setIsAuthenticated(true);
 					setUser(userData);
 				} catch (error) {
@@ -58,22 +52,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 					setUser(null);
 				}
 			}
+			setLoading(false); // Set loading to false after the check is complete
 		};
 
 		checkAuth();
-	}, [token]);
+	}, [showToaster]);
 
 	// Login function
 	const handleLogin = async (email: string, password: string) => {
 		try {
 			const userData = await login(email, password, showToaster);
 			setIsAuthenticated(true);
-			const { user, token } = userData;
-			setToken(token);
-			setUser(user);
+			setUser(userData);
 			showToaster('Login successful!', 'success');
-			localStorage.setItem('authToken', token); // Store token in localStorage
-			router.push('/'); // Redirect to the users page after login
+			router.push('/users');
 		} catch (error) {
 			showToaster('Login failed. Please try again.', 'error');
 		}
@@ -93,6 +85,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 			value={{
 				isAuthenticated,
 				user,
+				loading, // Provide the loading state
 				login: handleLogin,
 				logout: handleLogout,
 			}}
@@ -102,7 +95,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 	);
 };
 
-// Custom hook to use the AuthContext
 export const useAuth = () => {
 	const context = useContext(AuthContext);
 	if (!context) {

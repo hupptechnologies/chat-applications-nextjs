@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ToasterProvider } from '@/components/Toaster';
 import { AuthProvider } from '@/context/AuthContext';
+import { SocketProvider } from '@/context/SocketContext';
 import theme from '@/theme/theme';
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -11,7 +12,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 			<CssBaseline /> {/* Normalize CSS and apply baseline styles */}
 			<ToasterProvider>
 				<AuthProvider>
-					<Component {...pageProps} />
+					<SocketProvider>
+						<Component {...pageProps} />
+					</SocketProvider>
 				</AuthProvider>
 			</ToasterProvider>
 		</ThemeProvider>
