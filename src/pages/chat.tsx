@@ -37,12 +37,35 @@ const ChatPage: React.FC = () => {
 	// Send a new message
 	const sendMessage = () => {
 		if (socket && selectedUser && newMessage.trim() && user) {
+			// Create a temporary message object
+			const tempMessage = {
+				id: Date.now(), // Use a temporary unique ID
+				senderId: user.id,
+				receiverId: selectedUser.id,
+				content: newMessage,
+				status: 'sent', // Initial status
+				timestamp: new Date().toISOString(), // Add a timestamp
+			};
+
+			// Add the new message to the local state immediately
+			setMessages((prevMessages) => [...prevMessages, tempMessage]);
+
+			// Emit the `send_message` event to the server
 			socket.emit('send_message', {
 				senderId: user.id,
 				receiverId: selectedUser.id,
 				content: newMessage,
 			});
+
+			// Clear the input field
 			setNewMessage('');
+		}
+	};
+
+	// Handle Enter key press to send message
+	const handleKeyPress = (e: React.KeyboardEvent) => {
+		if (e.key === 'Enter') {
+			sendMessage();
 		}
 	};
 
@@ -67,7 +90,13 @@ const ChatPage: React.FC = () => {
 		<ProtectedRoute>
 			<div style={{ display: 'flex', height: '100vh' }}>
 				{/* Sidebar */}
-				<div style={{ width: '30%', borderRight: '1px solid #ccc' }}>
+				<div
+					style={{
+						width: '30%',
+						borderRight: '1px solid #ccc',
+						padding: '10px',
+					}}
+				>
 					<h2>Contacts</h2>
 					{users.map((user) => (
 						<div
@@ -78,31 +107,40 @@ const ChatPage: React.FC = () => {
 								cursor: 'pointer',
 								backgroundColor:
 									selectedUser?.id === user.id ? '#f0f0f0' : 'white',
+								borderRadius: '5px',
+								marginBottom: '5px',
 							}}
 						>
-							<strong>{user.name}</strong>
-							<p>{user.lastMessage?.content || 'No messages yet'}</p>
-							<small>
-								{user.lastMessage?.status === 'read'
-									? 'Read'
-									: user.lastMessage?.status === 'delivered'
-										? 'Delivered'
-										: 'Sent'}
-							</small>
+							<strong>{user.userName}</strong>
+							{user.lastMessage && (
+								<p
+									style={{ margin: '5px 0', fontSize: '0.9em', color: '#666' }}
+								>
+									{user.lastMessage?.content}
+								</p>
+							)}
 						</div>
 					))}
 				</div>
 
 				{/* Main Chat Area */}
-				<div style={{ flex: 1, padding: '20px' }}>
+				<div
+					style={{
+						flex: 1,
+						padding: '20px',
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+				>
 					{selectedUser ? (
 						<>
-							<h2>Chat with {selectedUser.name}</h2>
+							<h2>Chat with {selectedUser.userName}</h2>
 							<div
 								style={{
-									height: '70%',
+									flex: 1,
 									overflowY: 'scroll',
 									borderBottom: '1px solid #ccc',
+									padding: '10px',
 								}}
 							>
 								{messages.map((msg) => (
@@ -110,7 +148,6 @@ const ChatPage: React.FC = () => {
 										key={msg.id}
 										style={{
 											textAlign: msg.senderId === user?.id ? 'right' : 'left',
-											margin: '10px',
 										}}
 									>
 										<p
@@ -120,29 +157,41 @@ const ChatPage: React.FC = () => {
 												padding: '10px',
 												borderRadius: '10px',
 												display: 'inline-block',
+												maxWidth: '70%',
+												margin: 0,
 											}}
 										>
-											{msg.content}
+											{msg.content} {msg.timestamp}
 										</p>
-										<small>
-											{msg.status === 'read'
-												? 'Read'
-												: msg.status === 'delivered'
-													? 'Delivered'
-													: 'Sent'}
-										</small>
 									</div>
 								))}
 							</div>
-							<div style={{ marginTop: '20px' }}>
+							<div style={{ marginTop: '20px', display: 'flex' }}>
 								<input
 									type="text"
 									value={newMessage}
 									onChange={(e) => setNewMessage(e.target.value)}
+									onKeyPress={handleKeyPress}
 									placeholder="Type your message..."
-									style={{ width: '80%', padding: '10px' }}
+									style={{
+										flex: 1,
+										padding: '10px',
+										border: '1px solid #ccc',
+										borderRadius: '5px',
+										marginRight: '10px',
+									}}
 								/>
-								<button onClick={sendMessage} style={{ padding: '10px' }}>
+								<button
+									onClick={sendMessage}
+									style={{
+										padding: '10px 20px',
+										backgroundColor: '#007bff',
+										color: '#fff',
+										border: 'none',
+										borderRadius: '5px',
+										cursor: 'pointer',
+									}}
+								>
 									Send
 								</button>
 							</div>

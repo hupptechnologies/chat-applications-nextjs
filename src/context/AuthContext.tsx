@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 				try {
 					const userData = await fetchUsers(showToaster);
 					setIsAuthenticated(true);
-					setUser(userData);
+					setUser(userData.data);
 				} catch (error) {
 					localStorage.removeItem('authToken'); // Clear invalid token
 					setIsAuthenticated(false);
