@@ -1,7 +1,8 @@
 import React from 'react';
 import { useRouter } from 'next/router';
-import { useAuth } from '../context/AuthContext';
 import { CircularProgress, Box } from '@mui/material';
+import DashboardLayout from '@/components/DashboardLayout';
+import { useAuth } from '@/context/AuthContext';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 	children,
@@ -29,7 +30,11 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
 		);
 	}
 
-	return <>{isAuthenticated ? children : null}</>;
+	return (
+		<>
+			{isAuthenticated ? <DashboardLayout>{children}</DashboardLayout> : null}
+		</>
+	);
 };
 
 export default ProtectedRoute;
