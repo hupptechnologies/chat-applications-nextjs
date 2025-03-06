@@ -2,6 +2,7 @@ import eslint from '@eslint/js';
 import prettierConfig from 'eslint-config-prettier';
 import prettierPlugin from 'eslint-plugin-prettier';
 import tseslint from 'typescript-eslint';
+import nextPlugin from '@next/eslint-plugin-next';
 
 export default tseslint.config(
 	eslint.configs.recommended,
@@ -14,6 +15,7 @@ export default tseslint.config(
 	{
 		plugins: {
 			prettier: prettierPlugin,
+			'@next/next': nextPlugin,
 		},
 		rules: {
 			'@typescript-eslint/no-explicit-any': 'off',
