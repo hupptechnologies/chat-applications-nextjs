@@ -15,7 +15,7 @@ import { useToaster } from '../components/Toaster';
 interface AuthContextType {
 	isAuthenticated: boolean;
 	loading: boolean;
-	user: { id: string; name: string; email: string } | null;
+	user: { id: number; userName: string; email: string } | null;
 	login: (_email: string, _password: string) => Promise<void>;
 	logout: () => void;
 }
@@ -29,8 +29,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [user, setUser] = useState<{
-		id: string;
-		name: string;
+		id: number;
+		userName: string;
 		email: string;
 	} | null>(null);
 	const [loading, setLoading] = useState(true); // Initialize loading as true

@@ -10,10 +10,15 @@ import {
 	AppBar,
 	IconButton,
 	ListItemButton,
+	Avatar,
+	Menu,
+	MenuItem,
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
 
 interface DashboardLayoutProps {
 	children: React.ReactNode;
@@ -22,11 +27,26 @@ interface DashboardLayoutProps {
 const drawerWidth = 240;
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+	const { user, logout } = useAuth();
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 	const router = useRouter();
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
+	};
+
+	const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleMenuClose = () => {
+		setAnchorEl(null);
+	};
+
+	const handleLogout = () => {
+		// Add your logout logic here
+		logout();
 	};
 
 	const menuItems = [
@@ -80,9 +100,31 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 					>
 						<MenuIcon />
 					</IconButton>
-					<Typography variant="h6" noWrap component="div">
+					<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
 						Chat App
 					</Typography>
+
+					{/* User info and logout button */}
+					<Box sx={{ display: 'flex', alignItems: 'center' }}>
+						<Typography variant="body1" sx={{ mr: 2 }}>
+							{user?.userName}
+						</Typography>
+						{user?.userName && (
+							<IconButton color="inherit" onClick={handleMenuClick}>
+								<Avatar>{user.userName.charAt(0)}</Avatar>
+							</IconButton>
+						)}
+						<Menu
+							anchorEl={anchorEl}
+							open={Boolean(anchorEl)}
+							onClose={handleMenuClose}
+						>
+							<MenuItem onClick={handleLogout}>
+								<ExitToAppIcon sx={{ mr: 1 }} />
+								Logout
+							</MenuItem>
+						</Menu>
+					</Box>
 				</Toolbar>
 			</AppBar>
 

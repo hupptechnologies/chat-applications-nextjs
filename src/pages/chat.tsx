@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { Box } from '@mui/material';
 import { useSocket } from '@/context/SocketContext';
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/context/ProtectedRoute';
+import ChatSidebar from '@/components/ChatSidebar';
+import ChatArea from '@/components/ChatArea';
+import MessageInput from '@/components/MessageInput';
+import { ChatMessageAttributes } from '@/interface/chatMessage';
 
 const ChatPage: React.FC = () => {
 	const { socket } = useSocket();
 	const { user } = useAuth();
-	const [users, setUsers] = useState<any[]>([]); // List of users with last message
-	const [selectedUser, setSelectedUser] = useState<any>(null); // Selected user for chat
-	const [messages, setMessages] = useState<any[]>([]); // Messages for the selected user
-	const [newMessage, setNewMessage] = useState(''); // New message input
+	const [users, setUsers] = useState<any[]>([]);
+	const [selectedUser, setSelectedUser] = useState<any>(null);
+	const [messages, setMessages] = useState<any[]>([]);
 
 	// Fetch the list of users with their last message
 	useEffect(() => {
@@ -28,179 +32,112 @@ const ChatPage: React.FC = () => {
 				userId: user.id,
 				otherUserId: selectedUser.id,
 			});
-			socket.on('chat_history', (messagesList: any[]) => {
+			socket.on('chat_history', (messagesList: ChatMessageAttributes[]) => {
 				setMessages(messagesList);
+
+				// Mark messages as read
+				messagesList.forEach((message) => {
+					if (
+						message.receiverId === user.id &&
+						message.senderId === selectedUser.id &&
+						message.status !== 'read'
+					) {
+						socket.emit('message_read', {
+							messageId: message.id,
+							senderId: selectedUser.id,
+							receiverId: user.id,
+						});
+					}
+				});
 			});
 		}
 	}, [socket, selectedUser, user]);
 
 	// Send a new message
-	const sendMessage = () => {
-		if (socket && selectedUser && newMessage.trim() && user) {
-			// Create a temporary message object
+	const sendMessage = (message: string) => {
+		if (socket && selectedUser && message.trim() && user) {
 			const tempMessage = {
-				id: Date.now(), // Use a temporary unique ID
+				id: Date.now(),
 				senderId: user.id,
 				receiverId: selectedUser.id,
-				content: newMessage,
-				status: 'sent', // Initial status
-				timestamp: new Date().toISOString(), // Add a timestamp
+				content: message,
+				status: 'sent',
+				timestamp: new Date().toISOString(),
 			};
 
-			// Add the new message to the local state immediately
 			setMessages((prevMessages) => [...prevMessages, tempMessage]);
 
-			// Emit the `send_message` event to the server
 			socket.emit('send_message', {
 				senderId: user.id,
 				receiverId: selectedUser.id,
-				content: newMessage,
+				content: message,
 			});
-
-			// Clear the input field
-			setNewMessage('');
 		}
 	};
 
-	// Handle Enter key press to send message
-	const handleKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			sendMessage();
-		}
-	};
-
-	// Listen for new messages in real-time
+	// Listen for new messages and status updates
 	useEffect(() => {
 		if (socket && user) {
-			socket.on(`receive_message_${user.id}`, (message: any) => {
-				if (selectedUser && message.senderId === selectedUser.id) {
-					setMessages((prevMessages) => [...prevMessages, message]);
+			// Listen for new messages
+			socket.on(
+				`receive_message_${user.id}`,
+				(message: ChatMessageAttributes) => {
+					socket.emit('message_delivered', {
+						messageId: message.id,
+						receiverId: user.id,
+					});
+					if (selectedUser && message.senderId === selectedUser.id) {
+						setMessages((prevMessages) => [...prevMessages, message]);
+					}
 				}
+			);
+
+			// Listen for message delivered updates
+			socket.on(`message_delivered_${user.id}`, (updatedMessage: any) => {
+				setMessages((prevMessages) =>
+					prevMessages.map((msg) =>
+						msg.id === updatedMessage.id ? { ...msg, status: 'delivered' } : msg
+					)
+				);
+			});
+
+			// Listen for message read updates
+			socket.on(`message_read_${user.id}`, (updatedMessage: any) => {
+				setMessages((prevMessages) =>
+					prevMessages.map((msg) =>
+						msg.id === updatedMessage.id ? { ...msg, status: 'read' } : msg
+					)
+				);
 			});
 		}
 
 		return () => {
 			if (socket) {
+				socket.off('message_delivered');
 				socket.off(`receive_message_${user?.id}`);
+				socket.off(`message_delivered_${user?.id}`);
+				socket.off(`message_read_${user?.id}`);
 			}
 		};
 	}, [socket, selectedUser, user]);
 
 	return (
 		<ProtectedRoute>
-			<div style={{ display: 'flex', height: '100vh' }}>
-				{/* Sidebar */}
-				<div
-					style={{
-						width: '30%',
-						borderRight: '1px solid #ccc',
-						padding: '10px',
-					}}
-				>
-					<h2>Contacts</h2>
-					{users.map((user) => (
-						<div
-							key={user.id}
-							onClick={() => setSelectedUser(user)}
-							style={{
-								padding: '10px',
-								cursor: 'pointer',
-								backgroundColor:
-									selectedUser?.id === user.id ? '#f0f0f0' : 'white',
-								borderRadius: '5px',
-								marginBottom: '5px',
-							}}
-						>
-							<strong>{user.userName}</strong>
-							{user.lastMessage && (
-								<p
-									style={{ margin: '5px 0', fontSize: '0.9em', color: '#666' }}
-								>
-									{user.lastMessage?.content}
-								</p>
-							)}
-						</div>
-					))}
-				</div>
-
-				{/* Main Chat Area */}
-				<div
-					style={{
-						flex: 1,
-						padding: '20px',
-						display: 'flex',
-						flexDirection: 'column',
-					}}
-				>
-					{selectedUser ? (
-						<>
-							<h2>Chat with {selectedUser.userName}</h2>
-							<div
-								style={{
-									flex: 1,
-									overflowY: 'scroll',
-									borderBottom: '1px solid #ccc',
-									padding: '10px',
-								}}
-							>
-								{messages.map((msg) => (
-									<div
-										key={msg.id}
-										style={{
-											textAlign: msg.senderId === user?.id ? 'right' : 'left',
-										}}
-									>
-										<p
-											style={{
-												backgroundColor:
-													msg.senderId === user?.id ? '#dcf8c6' : '#f0f0f0',
-												padding: '10px',
-												borderRadius: '10px',
-												display: 'inline-block',
-												maxWidth: '70%',
-												margin: 0,
-											}}
-										>
-											{msg.content} {msg.timestamp}
-										</p>
-									</div>
-								))}
-							</div>
-							<div style={{ marginTop: '20px', display: 'flex' }}>
-								<input
-									type="text"
-									value={newMessage}
-									onChange={(e) => setNewMessage(e.target.value)}
-									onKeyPress={handleKeyPress}
-									placeholder="Type your message..."
-									style={{
-										flex: 1,
-										padding: '10px',
-										border: '1px solid #ccc',
-										borderRadius: '5px',
-										marginRight: '10px',
-									}}
-								/>
-								<button
-									onClick={sendMessage}
-									style={{
-										padding: '10px 20px',
-										backgroundColor: '#007bff',
-										color: '#fff',
-										border: 'none',
-										borderRadius: '5px',
-										cursor: 'pointer',
-									}}
-								>
-									Send
-								</button>
-							</div>
-						</>
-					) : (
-						<p>Select a user to start chatting</p>
-					)}
-				</div>
-			</div>
+			<Box sx={{ display: 'flex', height: '100vh' }}>
+				<ChatSidebar
+					users={users}
+					selectedUser={selectedUser}
+					onSelectUser={setSelectedUser}
+				/>
+				<Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+					<ChatArea
+						selectedUser={selectedUser}
+						messages={messages}
+						user={user}
+					/>
+					{selectedUser && <MessageInput onSendMessage={sendMessage} />}
+				</Box>
+			</Box>
 		</ProtectedRoute>
 	);
 };
