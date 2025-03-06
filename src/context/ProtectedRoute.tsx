@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/router';
 import { CircularProgress, Box } from '@mui/material';
-import DashboardLayout from '@/components/DashboardLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { useAuth } from '@/context/AuthContext';
 
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({

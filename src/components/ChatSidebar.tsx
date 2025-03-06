@@ -1,11 +1,18 @@
 import React from 'react';
+import { ListItemText, Typography } from '@mui/material';
 import {
-	List,
-	ListItemButton,
-	ListItemText,
-	Typography,
-	Box,
-} from '@mui/material';
+	SidebarContainer,
+	SidebarHeader,
+	SidebarTitle,
+	SearchField,
+	UserList,
+	UserListItem,
+	UserAvatar,
+	UserName,
+	UserLastMessage,
+	UserTimestamp,
+	InstallMessengerBox,
+} from '@/styles/ChatSidebar';
 
 interface ChatSidebarProps {
 	users: any[];
@@ -19,45 +26,46 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 	onSelectUser,
 }) => {
 	return (
-		<Box sx={{ width: '30%', borderRight: '1px solid #ccc', padding: '10px' }}>
-			<Typography variant="h6" sx={{ padding: '10px' }}>
-				Contacts
-			</Typography>
-			<List>
+		<SidebarContainer>
+			<SidebarHeader>
+				<SidebarTitle variant="h6">Chats</SidebarTitle>
+				<SearchField
+					fullWidth
+					placeholder="Search Messenger..."
+					variant="outlined"
+					size="small"
+				/>
+			</SidebarHeader>
+
+			<UserList>
 				{users.map((user) => (
-					<ListItemButton
+					<UserListItem
 						key={user.id}
+						selected={selectedUser?.id === user.id}
 						onClick={() => onSelectUser(user)}
-						sx={{
-							backgroundColor:
-								selectedUser?.id === user.id ? '#f0f0f0' : 'white',
-							borderRadius: '5px',
-							marginBottom: '5px',
-						}}
 					>
+						<UserAvatar>{user.userName.charAt(0)}</UserAvatar>
 						<ListItemText
-							primary={user.userName}
+							primary={<UserName>{user.userName}</UserName>}
 							secondary={
-								user.lastMessage && (
-									<>
-										<Typography variant="body2" color="text.secondary">
-											{user.lastMessage.content}
-										</Typography>
-										<Typography variant="caption" color="text.secondary">
-											{user.lastMessage.status === 'read'
-												? 'Read'
-												: user.lastMessage.status === 'delivered'
-													? 'Delivered'
-													: 'Sent'}
-										</Typography>
-									</>
-								)
+								<UserLastMessage variant="body2">
+									{user.lastMessage?.content}
+								</UserLastMessage>
 							}
 						/>
-					</ListItemButton>
+						<UserTimestamp variant="caption">
+							{user.lastMessage?.timestamp || ''}
+						</UserTimestamp>
+					</UserListItem>
 				))}
-			</List>
-		</Box>
+			</UserList>
+
+			<InstallMessengerBox>
+				<Typography variant="body2" color="textSecondary">
+					Install Messenger App
+				</Typography>
+			</InstallMessengerBox>
+		</SidebarContainer>
 	);
 };
 

@@ -1,5 +1,10 @@
+// MessageInput/MessageInput.tsx
 import React, { useState } from 'react';
-import { Box, TextField, Button } from '@mui/material';
+import {
+	MessageInputContainer,
+	MessageTextField,
+	SendButton,
+} from '@/styles/ChatSidebar'; // Import the styled components
 
 interface MessageInputProps {
 	onSendMessage: (_message: string) => void;
@@ -22,24 +27,22 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
 	};
 
 	return (
-		<Box sx={{ marginTop: '20px', display: 'flex' }}>
-			<TextField
+		<MessageInputContainer>
+			<MessageTextField
 				fullWidth
 				value={newMessage}
 				onChange={(e) => setNewMessage(e.target.value)}
 				onKeyPress={handleKeyPress}
 				placeholder="Type your message..."
-				sx={{ marginRight: '10px' }}
 			/>
-			<Button
+			<SendButton
 				variant="contained"
 				color="primary"
 				onClick={handleSendMessage}
-				sx={{ padding: '10px 20px' }}
 			>
 				Send
-			</Button>
-		</Box>
+			</SendButton>
+		</MessageInputContainer>
 	);
 };
 

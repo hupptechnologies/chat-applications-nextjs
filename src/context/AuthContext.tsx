@@ -10,12 +10,13 @@ import React, {
 import { useRouter } from 'next/router';
 import { login, fetchUsers } from '@/services/api';
 import { useToaster } from '../components/Toaster';
+import { UserAttributes } from '@/interface/User';
 
 // Define the shape of the context
 interface AuthContextType {
 	isAuthenticated: boolean;
 	loading: boolean;
-	user: { id: number; userName: string; email: string } | null;
+	user: UserAttributes | null;
 	login: (_email: string, _password: string) => Promise<void>;
 	logout: () => void;
 }
@@ -28,11 +29,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 	children,
 }) => {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [user, setUser] = useState<{
-		id: number;
-		userName: string;
-		email: string;
-	} | null>(null);
+	const [user, setUser] = useState<UserAttributes | null>(null);
 	const [loading, setLoading] = useState(true); // Initialize loading as true
 	const router = useRouter();
 	const { showToaster } = useToaster();

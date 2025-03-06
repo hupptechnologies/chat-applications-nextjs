@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
 import { useSocket } from '@/context/SocketContext';
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/context/ProtectedRoute';
@@ -7,6 +6,7 @@ import ChatSidebar from '@/components/ChatSidebar';
 import ChatArea from '@/components/ChatArea';
 import MessageInput from '@/components/MessageInput';
 import { ChatMessageAttributes } from '@/interface/chatMessage';
+import { ChatPageContainer, ChatMainContent } from '@/styles/Chat'; // Import the styled components
 
 const ChatPage: React.FC = () => {
 	const { socket } = useSocket();
@@ -123,21 +123,22 @@ const ChatPage: React.FC = () => {
 
 	return (
 		<ProtectedRoute>
-			<Box sx={{ display: 'flex', height: '100vh' }}>
+			<ChatPageContainer>
 				<ChatSidebar
 					users={users}
 					selectedUser={selectedUser}
 					onSelectUser={setSelectedUser}
 				/>
-				<Box sx={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+				<ChatMainContent>
 					<ChatArea
 						selectedUser={selectedUser}
 						messages={messages}
 						user={user}
+						onSendMessage={sendMessage}
 					/>
 					{selectedUser && <MessageInput onSendMessage={sendMessage} />}
-				</Box>
-			</Box>
+				</ChatMainContent>
+			</ChatPageContainer>
 		</ProtectedRoute>
 	);
 };

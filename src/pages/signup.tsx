@@ -1,13 +1,21 @@
+// SignupPage/SignupPage.tsx
 import React from 'react';
+import { TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
 import { AxiosError } from 'axios';
 import NextLink from 'next/link';
 import { useToaster } from '@/components/Toaster';
 import { signup } from '@/services/api';
 import PublicRoute from '@/context/PublicRoute';
 import { SignupValidationSchema } from '@/utils/validationSchema';
+import {
+	SignupContainer,
+	SignupBox,
+	SignupTitle,
+	SignupButton,
+	LoginLinkBox,
+} from '@/styles/AuthStyle';
 
 const SignupPage: React.FC = () => {
 	const router = useRouter();
@@ -34,11 +42,9 @@ const SignupPage: React.FC = () => {
 
 	return (
 		<PublicRoute>
-			<Container maxWidth="sm">
-				<Box sx={{ mt: 4 }}>
-					<Typography variant="h4" align="center" gutterBottom>
-						Signup
-					</Typography>
+			<SignupContainer maxWidth="sm">
+				<SignupBox>
+					<SignupTitle variant="h4">Signup</SignupTitle>
 					<form onSubmit={formik.handleSubmit}>
 						<TextField
 							fullWidth
@@ -80,26 +86,25 @@ const SignupPage: React.FC = () => {
 							margin="normal"
 							variant="outlined"
 						/>
-						<Button
+						<SignupButton
 							type="submit"
 							variant="contained"
 							color="primary"
 							fullWidth
-							sx={{ mt: 2 }}
 						>
 							Signup
-						</Button>
+						</SignupButton>
 					</form>
-					<Box sx={{ mt: 2, textAlign: 'center' }}>
+					<LoginLinkBox>
 						<Typography variant="body1">
 							Already have an account?{' '}
 							<NextLink href="/login" passHref>
 								Log in
 							</NextLink>
 						</Typography>
-					</Box>
-				</Box>
-			</Container>
+					</LoginLinkBox>
+				</SignupBox>
+			</SignupContainer>
 		</PublicRoute>
 	);
 };

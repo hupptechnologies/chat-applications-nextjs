@@ -1,10 +1,18 @@
+// LoginPage/LoginPage.tsx
 import React from 'react';
-import { Button, TextField, Container, Typography, Box } from '@mui/material';
+import { TextField, Typography } from '@mui/material';
 import { useFormik } from 'formik';
 import NextLink from 'next/link';
 import { useAuth } from '@/context/AuthContext';
 import { LoginValidationSchema } from '@/utils/validationSchema';
 import PublicRoute from '@/context/PublicRoute';
+import {
+	LoginContainer,
+	LoginBox,
+	LoginTitle,
+	LoginButton,
+	SignupLinkBox,
+} from '@/styles/AuthStyle'; // Import the styled components
 
 const LoginPage: React.FC = () => {
 	const { login } = useAuth();
@@ -25,11 +33,9 @@ const LoginPage: React.FC = () => {
 
 	return (
 		<PublicRoute>
-			<Container maxWidth="sm">
-				<Box sx={{ mt: 4 }}>
-					<Typography variant="h4" align="center" gutterBottom>
-						Login
-					</Typography>
+			<LoginContainer maxWidth="sm">
+				<LoginBox>
+					<LoginTitle variant="h4">Login</LoginTitle>
 					<form onSubmit={formik.handleSubmit}>
 						<TextField
 							fullWidth
@@ -56,26 +62,25 @@ const LoginPage: React.FC = () => {
 							margin="normal"
 							variant="outlined"
 						/>
-						<Button
+						<LoginButton
 							type="submit"
 							variant="contained"
 							color="primary"
 							fullWidth
-							sx={{ mt: 2 }}
 						>
 							Login
-						</Button>
+						</LoginButton>
 					</form>
-					<Box sx={{ mt: 2, textAlign: 'center' }}>
+					<SignupLinkBox>
 						<Typography variant="body1">
 							Don't have an account?{' '}
 							<NextLink href="/signup" passHref>
 								Sign up
 							</NextLink>
 						</Typography>
-					</Box>
-				</Box>
-			</Container>
+					</SignupLinkBox>
+				</LoginBox>
+			</LoginContainer>
 		</PublicRoute>
 	);
 };
