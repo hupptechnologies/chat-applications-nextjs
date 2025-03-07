@@ -1,25 +1,26 @@
+// ChatPage.tsx
 import React, { useEffect, useState } from 'react';
 import { useSocket } from '@/context/SocketContext';
 import { useAuth } from '@/context/AuthContext';
 import ProtectedRoute from '@/context/ProtectedRoute';
 import ChatSidebar from '@/components/ChatSidebar';
 import ChatArea from '@/components/ChatArea';
-import MessageInput from '@/components/MessageInput';
 import { ChatMessageAttributes } from '@/interface/chatMessage';
-import { ChatPageContainer, ChatMainContent } from '@/styles/Chat'; // Import the styled components
+import { ChatPageContainer, ChatMainContent } from '@/styles/Chat';
+import { UserAttributes } from '@/interface/User';
 
 const ChatPage: React.FC = () => {
 	const { socket } = useSocket();
 	const { user } = useAuth();
-	const [users, setUsers] = useState<any[]>([]);
-	const [selectedUser, setSelectedUser] = useState<any>(null);
-	const [messages, setMessages] = useState<any[]>([]);
+	const [users, setUsers] = useState<UserAttributes[]>([]);
+	const [selectedUser, setSelectedUser] = useState<UserAttributes | null>(null);
+	const [messages, setMessages] = useState<ChatMessageAttributes[]>([]);
 
 	// Fetch the list of users with their last message
 	useEffect(() => {
 		if (socket && user) {
 			socket.emit('get_users_chat_list', { userId: user.id });
-			socket.on('users_chat_list', (usersList: any[]) => {
+			socket.on('users_chat_list', (usersList: UserAttributes[]) => {
 				setUsers(usersList);
 			});
 		}
@@ -34,7 +35,18 @@ const ChatPage: React.FC = () => {
 			});
 			socket.on('chat_history', (messagesList: ChatMessageAttributes[]) => {
 				setMessages(messagesList);
-
+				setUsers((users) =>
+					users.map((user) => {
+						if (user.id === selectedUser.id) {
+							return {
+								...user,
+								lastMessage: messagesList[messagesList.length - 1],
+								unreadCount: 0,
+							};
+						}
+						return user;
+					})
+				);
 				// Mark messages as read
 				messagesList.forEach((message) => {
 					if (
@@ -56,13 +68,13 @@ const ChatPage: React.FC = () => {
 	// Send a new message
 	const sendMessage = (message: string) => {
 		if (socket && selectedUser && message.trim() && user) {
-			const tempMessage = {
+			const tempMessage: ChatMessageAttributes = {
 				id: Date.now(),
 				senderId: user.id,
 				receiverId: selectedUser.id,
 				content: message,
 				status: 'sent',
-				timestamp: new Date().toISOString(),
+				sentAt: new Date(),
 			};
 
 			setMessages((prevMessages) => [...prevMessages, tempMessage]);
@@ -82,10 +94,40 @@ const ChatPage: React.FC = () => {
 			socket.on(
 				`receive_message_${user.id}`,
 				(message: ChatMessageAttributes) => {
+					// Update the user list with the new message and unread count
+					setUsers((prevUsers) => {
+						const updatedUsers = prevUsers.map((u) => {
+							if (u.id === message.senderId) {
+								return {
+									...u,
+									unreadCount: (u.unreadCount || 0) + 1,
+									lastMessage: message,
+								};
+							}
+							return u;
+						});
+
+						// Sort users by the timestamp of the last message (most recent first)
+						updatedUsers.sort((a, b) => {
+							const aTime = a.lastMessage
+								? new Date(a.lastMessage.sentAt).getTime()
+								: 0;
+							const bTime = b.lastMessage
+								? new Date(b.lastMessage.sentAt).getTime()
+								: 0;
+							return bTime - aTime;
+						});
+
+						return updatedUsers;
+					});
+
+					// Notify the sender that the message has been delivered
 					socket.emit('message_delivered', {
 						messageId: message.id,
 						receiverId: user.id,
 					});
+
+					// If the message is from the selected user, add it to the messages list
 					if (selectedUser && message.senderId === selectedUser.id) {
 						setMessages((prevMessages) => [...prevMessages, message]);
 					}
@@ -136,7 +178,6 @@ const ChatPage: React.FC = () => {
 						user={user}
 						onSendMessage={sendMessage}
 					/>
-					{selectedUser && <MessageInput onSendMessage={sendMessage} />}
 				</ChatMainContent>
 			</ChatPageContainer>
 		</ProtectedRoute>

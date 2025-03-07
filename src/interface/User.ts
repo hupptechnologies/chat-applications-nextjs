@@ -1,7 +1,11 @@
+import { ChatMessageAttributes } from './chatMessage';
+
 export interface UserAttributes {
-	readonly id: number;
+	id: number;
 	userName: string;
 	email: string;
-	readonly createdAt?: Date;
-	readonly updatedAt?: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
+	unreadCount?: number;
+	lastMessage?: ChatMessageAttributes;
 }

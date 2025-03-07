@@ -2,8 +2,8 @@ export interface ChatMessageAttributes {
 	id: number;
 	senderId: number;
 	receiverId: number;
-	message: string;
-	status: 'read' | 'sent' | 'delivered';
+	content: string;
+	status: 'sent' | 'delivered' | 'read';
 	sentAt: Date;
 	deliveredAt?: Date;
 	readAt?: Date;
