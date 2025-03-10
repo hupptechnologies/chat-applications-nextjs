@@ -2,12 +2,12 @@ import React from 'react';
 import { Send as SendIcon } from '@mui/icons-material';
 import { Typography, Box, ListItem, ListItemAvatar } from '@mui/material';
 import { UserAttributes } from '@/interface/User';
+import { ChatMessageAttributes } from '@/interface/chatMessage';
 import {
 	ChatContainer,
 	ChatHeader,
 	ChatAvatar,
 	ChatUserName,
-	ChatStatus,
 	ChatMessages,
 	MessageBubble,
 	MessageText,
@@ -16,7 +16,6 @@ import {
 	MessageTextField,
 	SendButton,
 } from '@/styles/ChatArea';
-import { ChatMessageAttributes } from '@/interface/chatMessage';
 
 interface ChatAreaProps {
 	selectedUser: UserAttributes | null;
@@ -81,7 +80,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 				<ChatHeader>
 					<ChatAvatar>{selectedUser?.userName.charAt(0)}</ChatAvatar>
 					<ChatUserName variant="h6">{selectedUser?.userName}</ChatUserName>
-					<ChatStatus variant="body2">Online</ChatStatus>
 				</ChatHeader>
 			)}
 
