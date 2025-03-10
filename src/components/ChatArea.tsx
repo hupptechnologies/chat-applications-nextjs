@@ -1,4 +1,3 @@
-// ChatArea/ChatArea.tsx
 import React from 'react';
 import { Send as SendIcon } from '@mui/icons-material';
 import { Typography, Box, ListItem, ListItemAvatar } from '@mui/material';
@@ -64,13 +63,27 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 		}
 	};
 
+	// Helper function to render the status tick based on message status
+	const renderMessageStatus = (status: string) => {
+		if (status === 'read') {
+			return <span style={{ color: 'blue' }}>✔✔</span>; // Blue double tick
+		} else if (status === 'delivered') {
+			return <span>✔✔</span>; // Double tick
+		} else if (status === 'sent') {
+			return <span>✔</span>; // Single tick
+		}
+		return null;
+	};
+
 	return (
 		<ChatContainer>
-			<ChatHeader>
-				<ChatAvatar>{selectedUser?.userName.charAt(0)}</ChatAvatar>
-				<ChatUserName variant="h6">{selectedUser?.userName}</ChatUserName>
-				<ChatStatus variant="body2">Online</ChatStatus>
-			</ChatHeader>
+			{selectedUser && (
+				<ChatHeader>
+					<ChatAvatar>{selectedUser?.userName.charAt(0)}</ChatAvatar>
+					<ChatUserName variant="h6">{selectedUser?.userName}</ChatUserName>
+					<ChatStatus variant="body2">Online</ChatStatus>
+				</ChatHeader>
+			)}
 
 			<ChatMessages>
 				{Object.entries(groupedMessages).map(([date, messages]) => (
@@ -106,6 +119,11 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 									<MessageTimestamp>
 										{new Date(msg.sentAt).toLocaleTimeString()}
 									</MessageTimestamp>
+									{user.id === msg.senderId && (
+										<Box sx={{ position: 'absolute', bottom: 2, right: 2 }}>
+											{renderMessageStatus(msg.status)}
+										</Box>
+									)}
 								</MessageBubble>
 							</ListItem>
 						))}

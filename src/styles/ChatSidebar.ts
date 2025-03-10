@@ -66,6 +66,14 @@ export const UserTimestamp = styled(Typography)(({ theme }) => ({
 	marginLeft: 'auto',
 }));
 
+export const OnlineStatus = styled(Box)(({ theme }) => ({
+	width: '8px',
+	height: '8px',
+	backgroundColor: 'green',
+	borderRadius: '50%',
+	marginLeft: theme.spacing(1),
+}));
+
 export const InstallMessengerBox = styled(Box)(({ theme }) => ({
 	padding: theme.spacing(2),
 	borderTop: `1px solid ${theme.palette.divider}`,

@@ -16,6 +16,13 @@ const ChatPage: React.FC = () => {
 	const [selectedUser, setSelectedUser] = useState<UserAttributes | null>(null);
 	const [messages, setMessages] = useState<ChatMessageAttributes[]>([]);
 
+	// Notify the server when the user connects
+	useEffect(() => {
+		if (socket && user) {
+			socket.emit('user_connected', user.id); // Notify server that the user is online
+		}
+	}, [socket, user]);
+
 	// Fetch the list of users with their last message
 	useEffect(() => {
 		if (socket && user) {
@@ -35,18 +42,7 @@ const ChatPage: React.FC = () => {
 			});
 			socket.on('chat_history', (messagesList: ChatMessageAttributes[]) => {
 				setMessages(messagesList);
-				setUsers((users) =>
-					users.map((user) => {
-						if (user.id === selectedUser.id) {
-							return {
-								...user,
-								lastMessage: messagesList[messagesList.length - 1],
-								unreadCount: 0,
-							};
-						}
-						return user;
-					})
-				);
+
 				// Mark messages as read
 				messagesList.forEach((message) => {
 					if (
@@ -64,6 +60,27 @@ const ChatPage: React.FC = () => {
 			});
 		}
 	}, [socket, selectedUser, user]);
+
+	// Listen for user status changes (online/offline)
+	useEffect(() => {
+		if (socket) {
+			socket.on(
+				'user_status_changed',
+				({ userId, status }: { userId: number; status: string }) => {
+					console.log('user_status_changed', { userId, status });
+					setUsers((prevUsers) =>
+						prevUsers.map((u) => (u.id === userId ? { ...u, status } : u))
+					);
+				}
+			);
+		}
+
+		return () => {
+			if (socket) {
+				socket.off('user_status_changed');
+			}
+		};
+	}, [socket]);
 
 	// Send a new message
 	const sendMessage = (message: string) => {
@@ -94,7 +111,6 @@ const ChatPage: React.FC = () => {
 			socket.on(
 				`receive_message_${user.id}`,
 				(message: ChatMessageAttributes) => {
-					// Update the user list with the new message and unread count
 					setUsers((prevUsers) => {
 						const updatedUsers = prevUsers.map((u) => {
 							if (u.id === message.senderId) {
@@ -134,29 +150,46 @@ const ChatPage: React.FC = () => {
 				}
 			);
 
-			// Listen for message delivered updates
-			socket.on(`message_delivered_${user.id}`, (updatedMessage: any) => {
+			// Listen for message sent updates
+			socket.on(`message_sent_${user.id}`, (message: ChatMessageAttributes) => {
 				setMessages((prevMessages) =>
 					prevMessages.map((msg) =>
-						msg.id === updatedMessage.id ? { ...msg, status: 'delivered' } : msg
+						msg.id === message.id ? { ...msg, status: 'sent' } : msg
 					)
 				);
 			});
 
+			// Listen for message delivered updates
+			socket.on(
+				`message_delivered_${user.id}`,
+				(updatedMessage: ChatMessageAttributes) => {
+					setMessages((prevMessages) =>
+						prevMessages.map((msg) =>
+							msg.id === updatedMessage.id
+								? { ...msg, status: 'delivered' }
+								: msg
+						)
+					);
+				}
+			);
+
 			// Listen for message read updates
-			socket.on(`message_read_${user.id}`, (updatedMessage: any) => {
-				setMessages((prevMessages) =>
-					prevMessages.map((msg) =>
-						msg.id === updatedMessage.id ? { ...msg, status: 'read' } : msg
-					)
-				);
-			});
+			socket.on(
+				`message_read_${user.id}`,
+				(updatedMessage: ChatMessageAttributes) => {
+					setMessages((prevMessages) =>
+						prevMessages.map((msg) =>
+							msg.id === updatedMessage.id ? { ...msg, status: 'read' } : msg
+						)
+					);
+				}
+			);
 		}
 
 		return () => {
 			if (socket) {
-				socket.off('message_delivered');
 				socket.off(`receive_message_${user?.id}`);
+				socket.off(`message_sent_${user?.id}`);
 				socket.off(`message_delivered_${user?.id}`);
 				socket.off(`message_read_${user?.id}`);
 			}
@@ -172,12 +205,14 @@ const ChatPage: React.FC = () => {
 					onSelectUser={setSelectedUser}
 				/>
 				<ChatMainContent>
-					<ChatArea
-						selectedUser={selectedUser}
-						messages={messages}
-						user={user}
-						onSendMessage={sendMessage}
-					/>
+					{user && (
+						<ChatArea
+							selectedUser={selectedUser}
+							messages={messages}
+							user={user}
+							onSendMessage={sendMessage}
+						/>
+					)}
 				</ChatMainContent>
 			</ChatPageContainer>
 		</ProtectedRoute>

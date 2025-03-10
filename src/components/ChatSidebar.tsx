@@ -1,23 +1,24 @@
 import React from 'react';
-import { Box, Badge, Typography, ListItemText } from '@mui/material';
+import { Badge, Typography, Box, ListItemText } from '@mui/material';
 import {
 	SidebarContainer,
 	SidebarHeader,
 	SidebarTitle,
+	SearchField,
 	UserList,
 	UserListItem,
 	UserAvatar,
 	UserName,
 	UserLastMessage,
 	UserTimestamp,
+	OnlineStatus,
 	InstallMessengerBox,
 } from '@/styles/ChatSidebar';
-import { UserAttributes } from '@/interface/User';
 
 interface ChatSidebarProps {
-	users: UserAttributes[];
-	selectedUser: UserAttributes | null;
-	onSelectUser: (_user: UserAttributes) => void;
+	users: any[];
+	selectedUser: any;
+	onSelectUser: (_user: any) => void;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
@@ -29,6 +30,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 		<SidebarContainer>
 			<SidebarHeader>
 				<SidebarTitle variant="h6">Chats</SidebarTitle>
+				<SearchField
+					fullWidth
+					placeholder="Search Messenger..."
+					variant="outlined"
+					size="small"
+				/>
 			</SidebarHeader>
 
 			<UserList>
@@ -41,31 +48,26 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 						<UserAvatar>{user.userName.charAt(0)}</UserAvatar>
 						<ListItemText
 							primary={
-								<Box
-									sx={{
-										display: 'flex',
-										alignItems: 'center',
-										justifyContent: 'space-between',
-									}}
-								>
-									<UserName>{user.userName}</UserName>
-									{(user.unreadCount || 0) > 0 && (
+								<Box sx={{ display: 'flex', alignItems: 'center' }}>
+									<UserName component="span">{user.userName}</UserName>
+									{user.status === 'online' && <OnlineStatus />}
+									{user.unreadCount > 0 && (
 										<Badge
 											color="primary"
 											badgeContent={user.unreadCount}
-											sx={{ margin: '8px' }}
+											sx={{ marginLeft: '8px' }}
 										/>
 									)}
 								</Box>
 							}
 							secondary={
-								<UserLastMessage variant="body2">
+								<UserLastMessage component="span" variant="body2">
 									{user.lastMessage?.content || 'No messages yet'}
 								</UserLastMessage>
 							}
 						/>
-						<UserTimestamp variant="caption">
-							{/* {user.lastMessage?.timestamp || ''} */}
+						<UserTimestamp component="span" variant="caption">
+							{user.lastMessage?.timestamp || ''}
 						</UserTimestamp>
 					</UserListItem>
 				))}
