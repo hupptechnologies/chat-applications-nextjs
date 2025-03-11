@@ -6,7 +6,7 @@ export const LoginValidationSchema = yup.object({
 });
 
 export const SignupValidationSchema = yup.object({
-	name: yup.string().required('Name is required'),
+	userName: yup.string().required('Name is required'),
 	email: yup.string().email('Invalid email').required('Email is required'),
 	password: yup.string().required('Password is required'),
 });

@@ -25,6 +25,29 @@ export const LoginTitle = styled(Typography)(({ theme }) => ({
 	textAlign: 'center',
 }));
 
+export const LoginFooter = styled(Box)(() => ({
+	display: 'flex',
+	marginTop: 2,
+	alignItems: 'center',
+	justifyContent: 'space-between',
+}));
+
+export const LoginHeader = styled(Box)(() => ({
+	display: 'flex',
+	marginTop: 2,
+	marginBottom: 2,
+	alignItems: 'center',
+	width: '100%',
+}));
+
+export const SignupFooter = styled(Box)(() => ({
+	display: 'flex',
+	marginTop: 2,
+	marginBottom: 2,
+	alignItems: 'center',
+	width: '100%',
+}));
+
 export const LoginButton = styled(Button)(({ theme }) => ({
 	marginTop: theme.spacing(2),
 }));

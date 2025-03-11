@@ -31,22 +31,20 @@ export const login = async (
 
 // Signup API
 export const signup = async (
-	name: string,
+	userName: string,
 	email: string,
-	password: string,
-	showToaster: (_message: string, _severity: 'success' | 'error') => void
+	password: string
 ) => {
 	try {
 		const response = await axios.post(`${API_URL}/auth/signup`, {
-			name,
+			userName,
 			email,
 			password,
 		});
 		return response.data;
 	} catch (error) {
 		const axiosError = error as AxiosError<ErrorResponse>;
-		showToaster(axiosError.response?.data?.message || 'Signup failed', 'error');
-		throw error;
+		throw axiosError;
 	}
 };
 

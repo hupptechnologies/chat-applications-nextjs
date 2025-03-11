@@ -1,6 +1,6 @@
 // LoginPage/LoginPage.tsx
 import React from 'react';
-import { TextField, Typography } from '@mui/material';
+import { TextField, Typography, Divider } from '@mui/material';
 import { useFormik } from 'formik';
 import NextLink from 'next/link';
 import { useAuth } from '@/context/AuthContext';
@@ -11,7 +11,8 @@ import {
 	LoginBox,
 	LoginTitle,
 	LoginButton,
-	SignupLinkBox,
+	LoginFooter,
+	LoginHeader,
 } from '@/styles/AuthStyle'; // Import the styled components
 
 const LoginPage: React.FC = () => {
@@ -35,13 +36,20 @@ const LoginPage: React.FC = () => {
 		<PublicRoute>
 			<LoginContainer maxWidth="sm">
 				<LoginBox>
-					<LoginTitle variant="h4">Login</LoginTitle>
+					<LoginTitle variant="h4">Login to your account</LoginTitle>
+					<LoginHeader>
+						<Divider sx={{ flexGrow: 1 }} />
+						<Typography variant="body1" sx={{ mx: 2 }}>
+							OR
+						</Typography>
+						<Divider sx={{ flexGrow: 1 }} />
+					</LoginHeader>
 					<form onSubmit={formik.handleSubmit}>
 						<TextField
 							fullWidth
 							id="email"
 							name="email"
-							label="Email"
+							label="Email Address"
 							value={values.email}
 							onChange={handleChange}
 							error={touched.email && Boolean(errors.email)}
@@ -62,23 +70,23 @@ const LoginPage: React.FC = () => {
 							margin="normal"
 							variant="outlined"
 						/>
+						<LoginFooter>
+							<Typography variant="body2">
+								<NextLink href="/signup" passHref>
+									Don't have an account? Sign up
+								</NextLink>
+							</Typography>
+						</LoginFooter>
 						<LoginButton
 							type="submit"
 							variant="contained"
 							color="primary"
 							fullWidth
+							sx={{ mt: 3 }}
 						>
 							Login
 						</LoginButton>
 					</form>
-					<SignupLinkBox>
-						<Typography variant="body1">
-							Don't have an account?{' '}
-							<NextLink href="/signup" passHref>
-								Sign up
-							</NextLink>
-						</Typography>
-					</SignupLinkBox>
 				</LoginBox>
 			</LoginContainer>
 		</PublicRoute>

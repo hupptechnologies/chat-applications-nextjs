@@ -49,7 +49,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 						<ListItemText
 							primary={
 								<Box sx={{ display: 'flex', alignItems: 'center' }}>
-									<UserName component="span">{user.userName}</UserName>
+									<UserName>{user.userName}</UserName>
 									{user.status === 'online' && <OnlineStatus />}
 									{user.unreadCount > 0 && (
 										<Badge
@@ -61,12 +61,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 								</Box>
 							}
 							secondary={
-								<UserLastMessage component="span" variant="body2">
+								<UserLastMessage variant="body2">
 									{user.lastMessage?.content || 'No messages yet'}
 								</UserLastMessage>
 							}
 						/>
-						<UserTimestamp component="span" variant="caption">
+						<UserTimestamp variant="caption">
 							{user.lastMessage?.timestamp || ''}
 						</UserTimestamp>
 					</UserListItem>

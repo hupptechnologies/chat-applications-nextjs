@@ -1,6 +1,12 @@
 // SignupPage/SignupPage.tsx
 import React from 'react';
-import { TextField, Typography } from '@mui/material';
+import {
+	TextField,
+	Typography,
+	Checkbox,
+	FormControlLabel,
+	Divider,
+} from '@mui/material';
 import { useFormik } from 'formik';
 import { useRouter } from 'next/router';
 import { AxiosError } from 'axios';
@@ -15,7 +21,12 @@ import {
 	SignupTitle,
 	SignupButton,
 	LoginLinkBox,
+	SignupFooter,
 } from '@/styles/AuthStyle';
+
+interface ErrorResponse {
+	message: string;
+}
 
 const SignupPage: React.FC = () => {
 	const router = useRouter();
@@ -23,19 +34,23 @@ const SignupPage: React.FC = () => {
 
 	const formik = useFormik({
 		initialValues: {
-			name: '',
+			userName: '',
 			email: '',
 			password: '',
+			receiveUpdates: false,
 		},
 		validationSchema: SignupValidationSchema,
 		onSubmit: async (values) => {
 			try {
-				await signup(values.name, values.email, values.password, showToaster);
+				await signup(values.userName, values.email, values.password);
 				showToaster('Signup successful!', 'success');
 				router.push('/login');
 			} catch (error) {
-				const axiosError = error as AxiosError;
-				showToaster(axiosError.message || 'Signup failed', 'error');
+				const axiosError = error as AxiosError<ErrorResponse>;
+				showToaster(
+					axiosError.response?.data?.message || 'Signup failed',
+					'error'
+				);
 			}
 		},
 	});
@@ -44,18 +59,18 @@ const SignupPage: React.FC = () => {
 		<PublicRoute>
 			<SignupContainer maxWidth="sm">
 				<SignupBox>
-					<SignupTitle variant="h4">Signup</SignupTitle>
+					<SignupTitle variant="h4">Sign up</SignupTitle>
 					<form onSubmit={formik.handleSubmit}>
 						<TextField
 							fullWidth
 							id="name"
-							name="name"
-							label="Name"
-							value={formik.values.name}
+							name="userName"
+							label="Full name"
+							value={formik.values.userName}
 							onChange={formik.handleChange}
 							onBlur={formik.handleBlur}
-							error={formik.touched.name && Boolean(formik.errors.name)}
-							helperText={formik.touched.name && formik.errors.name}
+							error={formik.touched.userName && Boolean(formik.errors.userName)}
+							helperText={formik.touched.userName && formik.errors.userName}
 							margin="normal"
 							variant="outlined"
 						/>
@@ -86,20 +101,39 @@ const SignupPage: React.FC = () => {
 							margin="normal"
 							variant="outlined"
 						/>
+						<FormControlLabel
+							control={
+								<Checkbox
+									name="receiveUpdates"
+									checked={formik.values.receiveUpdates}
+									onChange={formik.handleChange}
+									color="primary"
+								/>
+							}
+							label="I want to receive updates via email."
+						/>
 						<SignupButton
 							type="submit"
 							variant="contained"
 							color="primary"
 							fullWidth
+							sx={{ mt: 2 }}
 						>
-							Signup
+							Sign up
 						</SignupButton>
 					</form>
+					<SignupFooter>
+						<Divider sx={{ flexGrow: 1 }} />
+						<Typography variant="body1" sx={{ mx: 2 }}>
+							or
+						</Typography>
+						<Divider sx={{ flexGrow: 1 }} />
+					</SignupFooter>
 					<LoginLinkBox>
 						<Typography variant="body1">
 							Already have an account?{' '}
 							<NextLink href="/login" passHref>
-								Log in
+								Sign in
 							</NextLink>
 						</Typography>
 					</LoginLinkBox>
