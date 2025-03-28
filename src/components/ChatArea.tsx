@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, ListItem, Typography } from '@mui/material';
 import { UserAttributes } from '@/interface/User';
 import { ChatMessageAttributes } from '@/interface/chatMessage';
+import MessageInput from './MessageInput';
+import ContactInfoModal from './ContactInfoModal';
+import MessageStatus from './MessageStatus';
 import {
 	ChatContainer,
 	ChatHeader,
@@ -11,13 +14,10 @@ import {
 	MessageBubble,
 	MessageText,
 	MessageTimestamp,
-	MessageStatus,
 	DateDivider,
 	DateDividerText,
 	InputContainer,
 } from '@/styles/ChatArea';
-import MessageInput from './MessageInput';
-import CheckIcon from '@mui/icons-material/Check';
 
 interface ChatAreaProps {
 	selectedUser: UserAttributes | null;
@@ -32,7 +32,8 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 	user,
 	onSendMessage,
 }) => {
-	const [newMessage, setNewMessage] = React.useState('');
+	const [newMessage, setNewMessage] = useState('');
+	const [showContactInfo, setShowContactInfo] = useState(false);
 
 	// Group messages by date with custom labels
 	const groupMessagesByDate = (messages: ChatMessageAttributes[]) => {
@@ -125,39 +126,11 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 		});
 	};
 
-	// Render message status ticks
-	const renderMessageStatus = (status: string) => {
-		switch (status) {
-			case 'read':
-				return (
-					<MessageStatus>
-						<CheckIcon sx={{ fontSize: 16, color: '#53bdeb' }} />
-						<CheckIcon sx={{ fontSize: 16, color: '#53bdeb', ml: -1.1 }} />
-					</MessageStatus>
-				);
-			case 'delivered':
-				return (
-					<MessageStatus>
-						<CheckIcon sx={{ fontSize: 16, color: 'grey' }} />
-						<CheckIcon sx={{ fontSize: 16, color: 'grey', ml: -1.1 }} />
-					</MessageStatus>
-				);
-			case 'sent':
-				return (
-					<MessageStatus>
-						<CheckIcon sx={{ fontSize: 16, color: 'grey' }} />
-					</MessageStatus>
-				);
-			default:
-				return null;
-		}
-	};
-
 	return (
 		<ChatContainer>
 			{selectedUser ? (
 				<>
-					<ChatHeader>
+					<ChatHeader onClick={() => setShowContactInfo(true)}>
 						<ChatAvatar>{selectedUser.userName.charAt(0)}</ChatAvatar>
 						<ChatUserName variant="h6">{selectedUser.userName}</ChatUserName>
 					</ChatHeader>
@@ -192,8 +165,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 												<MessageTimestamp>
 													{formatTime(new Date(msg.sentAt))}
 												</MessageTimestamp>
-												{msg.senderId === user.id &&
-													renderMessageStatus(msg.status)}
+												{msg.senderId === user.id && (
+													<MessageStatus status={msg.status} />
+												)}
 											</Box>
 										</MessageBubble>
 									</ListItem>
@@ -205,6 +179,15 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 					<InputContainer>
 						<MessageInput onSendMessage={handleSendMessage} />
 					</InputContainer>
+					{showContactInfo && (
+						<ContactInfoModal
+							user={{
+								userName: selectedUser.userName,
+								phoneNumber: '12345678899',
+							}}
+							onClose={() => setShowContactInfo(false)}
+						/>
+					)}
 				</>
 			) : (
 				<Box

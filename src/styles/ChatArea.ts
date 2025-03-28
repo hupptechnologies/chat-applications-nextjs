@@ -11,7 +11,7 @@ import {
 export const ChatContainer = styled(Box)(({ theme }) => ({
 	display: 'flex',
 	flexDirection: 'column',
-	height: '100vh',
+	height: 'calc(100vh - 120px)',
 	backgroundColor: theme.palette.background.default,
 }));
 
@@ -19,6 +19,7 @@ export const ChatHeader = styled(Box)(({ theme }) => ({
 	display: 'flex',
 	alignItems: 'center',
 	padding: theme.spacing(2),
+	cursor: 'pointer',
 	backgroundColor: theme.palette.background.paper,
 	borderBottom: `1px solid ${theme.palette.divider}`,
 }));

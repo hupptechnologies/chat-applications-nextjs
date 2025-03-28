@@ -11,7 +11,7 @@ import {
 
 export const SidebarContainer = styled(Box)(({ theme }) => ({
 	width: '30%',
-	height: '100vh',
+	height: 'calc(100vh - 120px)',
 	borderRight: `1px solid ${theme.palette.divider}`,
 	backgroundColor: theme.palette.background.paper,
 	display: 'flex',
@@ -37,6 +37,7 @@ export const SearchContainer = styled(Box)(({ theme }) => ({
 	backgroundColor: theme.palette.background.paper,
 	borderRadius: '20px',
 	padding: theme.spacing(0.5, 1.5),
+	margin: '10px 0 10px 0',
 	border: `1px solid ${theme.palette.divider}`,
 }));
 
