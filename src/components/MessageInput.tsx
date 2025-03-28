@@ -1,10 +1,11 @@
 // MessageInput/MessageInput.tsx
 import React, { useState } from 'react';
+import { Send as SendIcon } from '@mui/icons-material';
 import {
 	MessageInputContainer,
 	MessageTextField,
 	SendButton,
-} from '@/styles/ChatSidebar'; // Import the styled components
+} from '@/styles/ChatArea'; // Import the styled components
 
 interface MessageInputProps {
 	onSendMessage: (_message: string) => void;
@@ -35,12 +36,8 @@ const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
 				onKeyPress={handleKeyPress}
 				placeholder="Type your message..."
 			/>
-			<SendButton
-				variant="contained"
-				color="primary"
-				onClick={handleSendMessage}
-			>
-				Send
+			<SendButton onClick={handleSendMessage} disabled={!newMessage.trim()}>
+				<SendIcon />
 			</SendButton>
 		</MessageInputContainer>
 	);

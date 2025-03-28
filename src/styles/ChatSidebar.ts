@@ -3,7 +3,6 @@ import { styled } from '@mui/material/styles';
 import {
 	Avatar,
 	Box,
-	Button,
 	Typography,
 	TextField,
 	ListItemButton,
@@ -11,7 +10,7 @@ import {
 
 export const SidebarContainer = styled(Box)(({ theme }) => ({
 	width: '30%',
-	height: '100vh',
+	height: 'calc(100vh - 120px)',
 	borderRight: `1px solid ${theme.palette.divider}`,
 	backgroundColor: theme.palette.background.paper,
 	display: 'flex',
@@ -72,19 +71,4 @@ export const OnlineStatus = styled(Box)(({ theme }) => ({
 	backgroundColor: 'green',
 	borderRadius: '50%',
 	marginLeft: theme.spacing(1),
-}));
-
-export const MessageInputContainer = styled(Box)(({ theme }) => ({
-	marginTop: theme.spacing(2.5), // Use theme.spacing for consistent spacing
-	display: 'flex',
-	alignItems: 'center',
-}));
-
-export const MessageTextField = styled(TextField)(({ theme }) => ({
-	flex: 1,
-	marginRight: theme.spacing(1.25), // Use theme.spacing for consistent spacing
-}));
-
-export const SendButton = styled(Button)(({ theme }) => ({
-	padding: theme.spacing(1.25, 2.5), // Use theme.spacing for consistent spacing
 }));

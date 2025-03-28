@@ -4,7 +4,6 @@ import { Box } from '@mui/material';
 
 export const ChatPageContainer = styled(Box)(() => ({
 	display: 'flex',
-	height: '100vh',
 }));
 
 export const ChatMainContent = styled(Box)(() => ({

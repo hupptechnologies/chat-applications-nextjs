@@ -1,5 +1,4 @@
 import React from 'react';
-import { Send as SendIcon } from '@mui/icons-material';
 import { Typography, Box, ListItem, ListItemAvatar } from '@mui/material';
 import { UserAttributes } from '@/interface/User';
 import { ChatMessageAttributes } from '@/interface/chatMessage';
@@ -12,10 +11,8 @@ import {
 	MessageBubble,
 	MessageText,
 	MessageTimestamp,
-	MessageInputContainer,
-	MessageTextField,
-	SendButton,
 } from '@/styles/ChatArea';
+import MessageInput from './MessageInput';
 
 interface ChatAreaProps {
 	selectedUser: UserAttributes | null;
@@ -53,12 +50,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 		if (newMessage.trim()) {
 			onSendMessage(newMessage);
 			setNewMessage('');
-		}
-	};
-
-	const handleKeyPress = (e: React.KeyboardEvent) => {
-		if (e.key === 'Enter') {
-			handleSendMessage();
 		}
 	};
 
@@ -129,19 +120,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 				))}
 			</ChatMessages>
 
-			<MessageInputContainer>
-				<MessageTextField
-					fullWidth
-					value={newMessage}
-					onChange={(e) => setNewMessage(e.target.value)}
-					onKeyPress={handleKeyPress}
-					placeholder="Type a message..."
-					variant="outlined"
-				/>
-				<SendButton onClick={handleSendMessage} disabled={!newMessage.trim()}>
-					<SendIcon />
-				</SendButton>
-			</MessageInputContainer>
+			{selectedUser && <MessageInput onSendMessage={handleSendMessage} />}
 		</ChatContainer>
 	);
 };

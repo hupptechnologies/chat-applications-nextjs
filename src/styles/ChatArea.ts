@@ -5,7 +5,7 @@ import { Box, Typography, Avatar, TextField, IconButton } from '@mui/material';
 export const ChatContainer = styled(Box)(({ theme }) => ({
 	display: 'flex',
 	flexDirection: 'column',
-	height: '100vh',
+	height: 'calc(100vh - 120px)',
 	backgroundColor: theme.palette.background.default,
 }));
 

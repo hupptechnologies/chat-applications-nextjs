@@ -21,9 +21,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
 	const [isConnected, setIsConnected] = useState(false); // Track connection status
 
 	useEffect(() => {
-		const socketIo = io(
-			process.env.NEXT_PUBLIC_SOCKET_URL || 'http://localhost:4000'
-		);
+		const socketIo = io(process.env.NEXT_PUBLIC_SOCKET_URL);
 
 		// Listen for connection events
 		socketIo.on('connect', () => {
