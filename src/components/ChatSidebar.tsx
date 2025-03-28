@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Typography, Box, ListItemText } from '@mui/material';
+import { Badge, Box, ListItemText } from '@mui/material';
 import {
 	SidebarContainer,
 	SidebarHeader,
@@ -12,19 +12,20 @@ import {
 	UserLastMessage,
 	UserTimestamp,
 	OnlineStatus,
-	InstallMessengerBox,
 } from '@/styles/ChatSidebar';
 
 interface ChatSidebarProps {
 	users: any[];
 	selectedUser: any;
 	onSelectUser: (_user: any) => void;
+	handleSearchUser: (_event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({
 	users,
 	selectedUser,
 	onSelectUser,
+	handleSearchUser,
 }) => {
 	return (
 		<SidebarContainer>
@@ -34,6 +35,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 					fullWidth
 					placeholder="Search Messenger..."
 					variant="outlined"
+					onChange={handleSearchUser}
 					size="small"
 				/>
 			</SidebarHeader>
@@ -48,7 +50,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 						<UserAvatar>{user.userName.charAt(0)}</UserAvatar>
 						<ListItemText
 							primary={
-								<Box sx={{ display: 'flex', alignItems: 'center' }}>
+								<Box>
 									<UserName>{user.userName}</UserName>
 									{user.status === 'online' && <OnlineStatus />}
 									{user.unreadCount > 0 && (
@@ -62,7 +64,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 							}
 							secondary={
 								<UserLastMessage variant="body2">
-									{user.lastMessage?.content || 'No messages yet'}
+									{user.lastMessage?.content}
 								</UserLastMessage>
 							}
 						/>
@@ -71,13 +73,12 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 						</UserTimestamp>
 					</UserListItem>
 				))}
+				{users.length === 0 && (
+					<UserListItem>
+						<UserName>Users not found!</UserName>
+					</UserListItem>
+				)}
 			</UserList>
-
-			<InstallMessengerBox>
-				<Typography variant="body2" color="textSecondary">
-					Install Messenger App
-				</Typography>
-			</InstallMessengerBox>
 		</SidebarContainer>
 	);
 };

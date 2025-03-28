@@ -74,13 +74,6 @@ export const OnlineStatus = styled(Box)(({ theme }) => ({
 	marginLeft: theme.spacing(1),
 }));
 
-export const InstallMessengerBox = styled(Box)(({ theme }) => ({
-	padding: theme.spacing(2),
-	borderTop: `1px solid ${theme.palette.divider}`,
-	backgroundColor: theme.palette.background.default,
-	textAlign: 'center',
-}));
-
 export const MessageInputContainer = styled(Box)(({ theme }) => ({
 	marginTop: theme.spacing(2.5), // Use theme.spacing for consistent spacing
 	display: 'flex',

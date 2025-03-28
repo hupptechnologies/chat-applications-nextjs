@@ -13,6 +13,7 @@ const ChatPage: React.FC = () => {
 	const { socket } = useSocket();
 	const { user } = useAuth();
 	const [users, setUsers] = useState<UserAttributes[]>([]);
+	const [usersList, setUsersList] = useState<UserAttributes[]>([]);
 	const [selectedUser, setSelectedUser] = useState<UserAttributes | null>(null);
 	const [messages, setMessages] = useState<ChatMessageAttributes[]>([]);
 
@@ -28,8 +29,9 @@ const ChatPage: React.FC = () => {
 	// Fetch the list of users with their last message
 	useEffect(() => {
 		if (socket && user) {
-			socketService.getUsersChatList(user.id, (usersList) => {
-				setUsers(usersList);
+			socketService.getUsersChatList(user.id, (res) => {
+				setUsersList(res);
+				setUsers(res);
 			});
 		}
 	}, [socket, user]);
@@ -139,6 +141,16 @@ const ChatPage: React.FC = () => {
 		};
 	}, [socket, selectedUser, user]);
 
+	const handleSearchUser = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const searchTerm = event.target.value;
+		if (socket && user) {
+			const filteredUsers = usersList.filter((user) =>
+				user.userName.toLowerCase().includes(searchTerm.toLowerCase())
+			);
+			setUsers(filteredUsers);
+		}
+	};
+
 	return (
 		<ProtectedRoute>
 			<ChatPageContainer>
@@ -146,6 +158,7 @@ const ChatPage: React.FC = () => {
 					users={users}
 					selectedUser={selectedUser}
 					onSelectUser={setSelectedUser}
+					handleSearchUser={handleSearchUser}
 				/>
 				<ChatMainContent>
 					{user && (
