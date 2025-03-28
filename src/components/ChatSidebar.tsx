@@ -1,6 +1,7 @@
 import React from 'react';
-import { Badge, Box, Divider, IconButton } from '@mui/material';
-import { Check, Search } from '@mui/icons-material';
+import { Badge, Divider, IconButton } from '@mui/material';
+import { Search } from '@mui/icons-material';
+import MessageStatus from './MessageStatus';
 import {
 	SidebarContainer,
 	SidebarHeader,
@@ -14,7 +15,6 @@ import {
 	NoContactsContainer,
 	NoContactsText,
 	NoContactsTitle,
-	MessageStatus,
 	UserInfoContainer,
 	UserNameRow,
 	MessageRow,
@@ -74,38 +74,8 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 								</UserNameRow>
 								<MessageRow>
 									<UserLastMessage>{user.lastMessage?.content}</UserLastMessage>
-									{user.lastMessage?.status === 'sent' && (
-										<MessageStatus>
-											<Check sx={{ fontSize: '16px', color: 'grey' }} />
-										</MessageStatus>
-									)}
-									{user.lastMessage?.status === 'delivered' && (
-										<MessageStatus>
-											<Box sx={{ display: 'flex' }}>
-												<Check sx={{ fontSize: '16px', color: 'grey' }} />
-												<Check
-													sx={{
-														fontSize: '16px',
-														color: 'grey',
-														marginLeft: '-10px',
-													}}
-												/>
-											</Box>
-										</MessageStatus>
-									)}
-									{user.lastMessage?.status === 'read' && (
-										<MessageStatus>
-											<Box sx={{ display: 'flex' }}>
-												<Check sx={{ fontSize: '16px', color: '#4FC3F7' }} />
-												<Check
-													sx={{
-														fontSize: '16px',
-														color: '#4FC3F7',
-														marginLeft: '-10px',
-													}}
-												/>
-											</Box>
-										</MessageStatus>
+									{user.lastMessage?.status && (
+										<MessageStatus status={user.lastMessage?.status} />
 									)}
 								</MessageRow>
 							</UserInfoContainer>

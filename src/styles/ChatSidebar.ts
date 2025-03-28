@@ -106,12 +106,6 @@ export const UserLastMessage = styled(Typography)(({ theme }) => ({
 	flex: 1,
 }));
 
-export const MessageStatus = styled(Box)(({ theme }) => ({
-	display: 'flex',
-	alignItems: 'center',
-	marginLeft: theme.spacing(1),
-}));
-
 export const NoContactsContainer = styled(Box)(({ theme }) => ({
 	display: 'flex',
 	flexDirection: 'column',
