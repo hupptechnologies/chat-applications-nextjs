@@ -7,5 +7,7 @@ export interface UserAttributes {
 	createdAt?: Date;
 	updatedAt?: Date;
 	unreadCount?: number;
+	about?: string;
+	phoneNumber?: string;
 	lastMessage?: ChatMessageAttributes;
 }

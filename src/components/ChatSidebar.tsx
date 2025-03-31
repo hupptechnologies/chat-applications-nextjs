@@ -2,6 +2,10 @@ import React from 'react';
 import { Badge, Divider, IconButton } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MessageStatus from './MessageStatus';
+import UserProfileModal from './UserProfileModal';
+import { useAuth } from '@/context/AuthContext';
+import { UserAttributes } from '@/interface/User';
+import { formatTime } from '@/utils/Index';
 import {
 	SidebarContainer,
 	SidebarHeader,
@@ -20,12 +24,14 @@ import {
 	MessageRow,
 	SearchContainer,
 	SearchInput,
+	UserProfileButton,
+	UserProfileAvatar,
 } from '@/styles/ChatSidebar';
 
 interface ChatSidebarProps {
-	users: any[];
-	selectedUser: any;
-	onSelectUser: (_user: any) => void;
+	users: UserAttributes[];
+	selectedUser: UserAttributes;
+	onSelectUser: (_user: UserAttributes) => void;
 	handleSearchUser: (_event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -35,10 +41,31 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 	onSelectUser,
 	handleSearchUser,
 }) => {
+	const { user: currentUser } = useAuth();
+	const [showProfileModal, setShowProfileModal] = React.useState(false);
+
+	const renderUnreadCount = (user: UserAttributes) => {
+		if (user.unreadCount && user.unreadCount > 0) {
+			return (
+				<Badge
+					badgeContent={Number(user.unreadCount)}
+					color="primary"
+					sx={{ marginLeft: '8px' }}
+				/>
+			);
+		}
+		return null;
+	};
+
 	return (
 		<SidebarContainer>
 			<SidebarHeader>
 				<SidebarTitle>Chats</SidebarTitle>
+				<UserProfileButton onClick={() => setShowProfileModal(true)}>
+					<UserProfileAvatar>
+						{currentUser?.userName.charAt(0)}
+					</UserProfileAvatar>
+				</UserProfileButton>
 			</SidebarHeader>
 			<SearchContainer>
 				<IconButton size="small" sx={{ padding: 0.5 }}>
@@ -62,15 +89,17 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 							selected={selectedUser?.id === user.id}
 							onClick={() => onSelectUser(user)}
 						>
-							<UserAvatar src={user.avatar} alt={user.userName}>
+							<UserAvatar alt={user.userName}>
 								{user.userName.charAt(0)}
 							</UserAvatar>
 							<UserInfoContainer>
 								<UserNameRow>
 									<UserName>{user.userName}</UserName>
-									<UserTimestamp>
-										{user.lastMessage?.timestamp || ''}
-									</UserTimestamp>
+									{user.lastMessage && (
+										<UserTimestamp>
+											{`${formatTime(new Date(user.lastMessage.sentAt))}` || ''}
+										</UserTimestamp>
+									)}
 								</UserNameRow>
 								<MessageRow>
 									<UserLastMessage>{user.lastMessage?.content}</UserLastMessage>
@@ -79,18 +108,19 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 									)}
 								</MessageRow>
 							</UserInfoContainer>
-							{user.unreadCount > 0 && (
-								<Badge
-									badgeContent={user.unreadCount}
-									color="primary"
-									sx={{ marginLeft: '8px' }}
-								/>
-							)}
+							{renderUnreadCount(user)}
 						</UserListItem>
-						<Divider variant="inset" component="li" />
+						<Divider variant="inset" sx={{ marginLeft: 0 }} component="li" />
 					</React.Fragment>
 				))}
 			</UserList>
+			{currentUser && (
+				<UserProfileModal
+					open={showProfileModal}
+					onClose={() => setShowProfileModal(false)}
+					user={currentUser}
+				/>
+			)}
 		</SidebarContainer>
 	);
 };

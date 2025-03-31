@@ -5,6 +5,7 @@ import { ChatMessageAttributes } from '@/interface/chatMessage';
 import MessageInput from './MessageInput';
 import ContactInfoModal from './ContactInfoModal';
 import MessageStatus from './MessageStatus';
+import { formatTime } from '@/utils/Index';
 import {
 	ChatContainer,
 	ChatHeader,
@@ -115,15 +116,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 			onSendMessage(newMessage);
 			setNewMessage('');
 		}
-	};
-
-	// Format time in WhatsApp style (e.g., 08:21)
-	const formatTime = (date: Date) => {
-		return date.toLocaleTimeString('en-US', {
-			hour: '2-digit',
-			minute: '2-digit',
-			hour12: false,
-		});
 	};
 
 	return (

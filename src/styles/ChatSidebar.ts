@@ -3,6 +3,7 @@ import { styled } from '@mui/material/styles';
 import {
 	Avatar,
 	Box,
+	IconButton,
 	Typography,
 	InputBase,
 	List,
@@ -19,6 +20,9 @@ export const SidebarContainer = styled(Box)(({ theme }) => ({
 }));
 
 export const SidebarHeader = styled(Box)(({ theme }) => ({
+	display: 'flex',
+	alignItems: 'center',
+	justifyContent: 'space-between',
 	padding: theme.spacing(2),
 	backgroundColor: theme.palette.grey[100],
 	borderBottom: `1px solid ${theme.palette.divider}`,
@@ -39,6 +43,15 @@ export const SearchContainer = styled(Box)(({ theme }) => ({
 	padding: theme.spacing(0.5, 1.5),
 	margin: '10px 0 10px 0',
 	border: `1px solid ${theme.palette.divider}`,
+}));
+
+export const UserProfileButton = styled(IconButton)(({ theme }) => ({
+	padding: theme.spacing(1),
+}));
+
+export const UserProfileAvatar = styled(Avatar)(() => ({
+	width: '48px',
+	height: '48px',
 }));
 
 export const SearchInput = styled(InputBase)(({ theme }) => ({
