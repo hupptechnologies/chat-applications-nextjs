@@ -138,12 +138,16 @@ const ChatPage: React.FC = () => {
 
 			// Listen for messages we received
 			socketService.listenForNewMessages(user.id, (message) => {
+				// If we're the receiver, mark the message as delivered
+				if (message.receiverId === user.id) {
+					socketService.markMessageDelivered(message.id, user.id);
+				}
+
 				// If the message is from the selected user, add it to the chat
 				if (selectedUser && message.senderId === selectedUser.id) {
 					setMessages((prevMessages) => [...prevMessages, message]);
-					// If we're the receiver and the chat is open, mark as delivered and read
+					// If we're the receiver and the chat is open, mark as read
 					if (message.receiverId === user.id) {
-						socketService.markMessageDelivered(message.id, user.id);
 						socketService.markMessageRead(message.id, selectedUser.id, user.id);
 					}
 				}
@@ -151,12 +155,12 @@ const ChatPage: React.FC = () => {
 				// Update the user's last message and unread count
 				setUsers((prevUsers) => {
 					const updatedUsers = prevUsers.map((u) => {
-						if (u.id === message.senderId) {
+						if (u.id === message.senderId || u.id === message.receiverId) {
 							const shouldIncrementUnread =
 								!selectedUser || selectedUser.id !== message.senderId;
 							return {
 								...u,
-								unreadCount: shouldIncrementUnread
+								unreadCount: shouldIncrementUnread && message.receiverId === user.id
 									? (u.unreadCount || 0) + 1
 									: 0,
 								lastMessage: message,
@@ -166,17 +170,15 @@ const ChatPage: React.FC = () => {
 					});
 
 					// Sort users by last message time
-					updatedUsers.sort((a, b) => {
+					return updatedUsers.sort((a, b) => {
 						const aTime = a.lastMessage
 							? new Date(a.lastMessage.sentAt).getTime()
 							: 0;
 						const bTime = b.lastMessage
 							? new Date(b.lastMessage.sentAt).getTime()
 							: 0;
-						return bTime - aTime;
+						return bTime - aTime; // Sort in descending order (most recent first)
 					});
-
-					return updatedUsers;
 				});
 			});
 
@@ -191,9 +193,9 @@ const ChatPage: React.FC = () => {
 					)
 				);
 
-				// Update last message in users list
-				setUsers((prevUsers) =>
-					prevUsers.map((u) => {
+				// Update last message in users list and re-sort
+				setUsers((prevUsers) => {
+					const updatedUsers = prevUsers.map((u) => {
 						if (u.lastMessage?.id === updatedMessage.id) {
 							return {
 								...u,
@@ -204,8 +206,19 @@ const ChatPage: React.FC = () => {
 							};
 						}
 						return u;
-					})
-				);
+					});
+
+					// Re-sort users by last message time
+					return updatedUsers.sort((a, b) => {
+						const aTime = a.lastMessage
+							? new Date(a.lastMessage.sentAt).getTime()
+							: 0;
+						const bTime = b.lastMessage
+							? new Date(b.lastMessage.sentAt).getTime()
+							: 0;
+						return bTime - aTime; // Sort in descending order (most recent first)
+					});
+				});
 			});
 		}
 
