@@ -154,14 +154,12 @@ const ChatPage: React.FC = () => {
 	return (
 		<ProtectedRoute>
 			<ChatPageContainer>
-				{selectedUser && (
-					<ChatSidebar
-						users={users}
-						selectedUser={selectedUser}
-						onSelectUser={setSelectedUser}
-						handleSearchUser={handleSearchUser}
-					/>
-				)}
+				<ChatSidebar
+					users={users}
+					selectedUser={selectedUser}
+					onSelectUser={setSelectedUser}
+					handleSearchUser={handleSearchUser}
+				/>
 				<ChatMainContent>
 					{user && (
 						<ChatArea

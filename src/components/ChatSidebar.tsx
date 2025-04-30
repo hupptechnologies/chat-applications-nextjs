@@ -30,7 +30,7 @@ import {
 
 interface ChatSidebarProps {
 	users: UserAttributes[];
-	selectedUser: UserAttributes;
+	selectedUser: UserAttributes | null;
 	onSelectUser: (_user: UserAttributes) => void;
 	handleSearchUser: (_event: React.ChangeEvent<HTMLInputElement>) => void;
 }
