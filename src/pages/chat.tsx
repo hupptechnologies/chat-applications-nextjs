@@ -42,7 +42,7 @@ const ChatPage: React.FC = () => {
 			socketService.getChatHistory(user.id, selectedUser.id, (messagesList) => {
 				setMessages(messagesList);
 
-				// Mark messages as read
+				// Mark messages as read and reset unread count
 				messagesList.forEach((message) => {
 					if (
 						message.receiverId === user.id &&
@@ -52,6 +52,13 @@ const ChatPage: React.FC = () => {
 						socketService.markMessageRead(message.id, selectedUser.id, user.id);
 					}
 				});
+
+				// Reset unread count for the selected user
+				setUsers((prevUsers) =>
+					prevUsers.map((u) =>
+						u.id === selectedUser.id ? { ...u, unreadCount: 0 } : u
+					)
+				);
 			});
 		}
 	}, [socket, selectedUser, user]);
@@ -75,7 +82,7 @@ const ChatPage: React.FC = () => {
 	const sendMessage = (message: string) => {
 		if (socket && selectedUser && message.trim() && user) {
 			const tempMessage: ChatMessageAttributes = {
-				id: Date.now(),
+				id: Date.now(), // Temporary ID
 				senderId: user.id,
 				receiverId: selectedUser.id,
 				content: message,
@@ -83,8 +90,10 @@ const ChatPage: React.FC = () => {
 				sentAt: new Date(),
 			};
 
+			// Add temporary message to the chat
 			setMessages((prevMessages) => [...prevMessages, tempMessage]);
 
+			// Send the message
 			socketService.sendMessage(user.id, selectedUser.id, message);
 		}
 	};
@@ -92,20 +101,71 @@ const ChatPage: React.FC = () => {
 	// Listen for new messages and status updates
 	useEffect(() => {
 		if (socket && user) {
+			// Listen for messages we sent (to update their status)
+			socketService.listenForSentMessages(user.id, (message) => {
+				// Update the temporary message with the server-assigned message
+				setMessages((prevMessages) => {
+					const tempMessageIndex = prevMessages.findIndex(
+						(msg) =>
+							msg.senderId === user.id &&
+							msg.content === message.content &&
+							msg.status === 'sent' &&
+							Date.now() - new Date(msg.sentAt).getTime() < 5000
+					);
+
+					if (tempMessageIndex !== -1) {
+						const updatedMessages = [...prevMessages];
+						updatedMessages[tempMessageIndex] = message;
+						return updatedMessages;
+					}
+
+					return prevMessages;
+				});
+
+				// Update the last message in the users list
+				setUsers((prevUsers) =>
+					prevUsers.map((u) => {
+						if (u.id === message.receiverId) {
+							return {
+								...u,
+								lastMessage: message,
+							};
+						}
+						return u;
+					})
+				);
+			});
+
+			// Listen for messages we received
 			socketService.listenForNewMessages(user.id, (message) => {
+				// If the message is from the selected user, add it to the chat
+				if (selectedUser && message.senderId === selectedUser.id) {
+					setMessages((prevMessages) => [...prevMessages, message]);
+					// If we're the receiver and the chat is open, mark as delivered and read
+					if (message.receiverId === user.id) {
+						socketService.markMessageDelivered(message.id, user.id);
+						socketService.markMessageRead(message.id, selectedUser.id, user.id);
+					}
+				}
+
+				// Update the user's last message and unread count
 				setUsers((prevUsers) => {
 					const updatedUsers = prevUsers.map((u) => {
 						if (u.id === message.senderId) {
+							const shouldIncrementUnread =
+								!selectedUser || selectedUser.id !== message.senderId;
 							return {
 								...u,
-								unreadCount: (u.unreadCount || 0) + 1,
+								unreadCount: shouldIncrementUnread
+									? (u.unreadCount || 0) + 1
+									: 0,
 								lastMessage: message,
 							};
 						}
 						return u;
 					});
 
-					// Sort users by the timestamp of the last message (most recent first)
+					// Sort users by last message time
 					updatedUsers.sort((a, b) => {
 						const aTime = a.lastMessage
 							? new Date(a.lastMessage.sentAt).getTime()
@@ -118,20 +178,33 @@ const ChatPage: React.FC = () => {
 
 					return updatedUsers;
 				});
-
-				// If the message is from the selected user, add it to the messages list
-				if (selectedUser && message.senderId === selectedUser.id) {
-					setMessages((prevMessages) => [...prevMessages, message]);
-				}
 			});
 
+			// Listen for message status updates
 			socketService.listenForStatusUpdates(user.id, (updatedMessage) => {
+				// Update message in chat area
 				setMessages((prevMessages) =>
 					prevMessages.map((msg) =>
 						msg.id === updatedMessage.id
 							? { ...msg, status: updatedMessage.status }
 							: msg
 					)
+				);
+
+				// Update last message in users list
+				setUsers((prevUsers) =>
+					prevUsers.map((u) => {
+						if (u.lastMessage?.id === updatedMessage.id) {
+							return {
+								...u,
+								lastMessage: {
+									...u.lastMessage,
+									status: updatedMessage.status,
+								},
+							};
+						}
+						return u;
+					})
 				);
 			});
 		}

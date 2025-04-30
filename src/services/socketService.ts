@@ -49,6 +49,16 @@ class SocketService {
 		}
 	}
 
+	// Listen for sent messages (to update their status)
+	listenForSentMessages(
+		userId: number,
+		callback: (_message: ChatMessageAttributes) => void
+	) {
+		if (this.socket) {
+			this.socket.on(`message_sent_${userId}`, callback);
+		}
+	}
+
 	// Send message
 	sendMessage(senderId: number, receiverId: number, message: string) {
 		if (this.socket) {
@@ -56,6 +66,16 @@ class SocketService {
 				senderId,
 				receiverId,
 				content: message,
+			});
+		}
+	}
+
+	// Mark message as delivered
+	markMessageDelivered(messageId: number, receiverId: number) {
+		if (this.socket) {
+			this.socket.emit('message_delivered', {
+				messageId,
+				receiverId,
 			});
 		}
 	}

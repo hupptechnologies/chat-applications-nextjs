@@ -33,7 +33,6 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 	user,
 	onSendMessage,
 }) => {
-	const [newMessage, setNewMessage] = useState('');
 	const [showContactInfo, setShowContactInfo] = useState(false);
 
 	// Group messages by date with custom labels
@@ -111,10 +110,9 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 
 	const groupedMessages = groupMessagesByDate(messages);
 
-	const handleSendMessage = () => {
-		if (newMessage.trim()) {
-			onSendMessage(newMessage);
-			setNewMessage('');
+	const handleSendMessage = (value: string) => {
+		if (value.trim()) {
+			onSendMessage(value);
 		}
 	};
 
