@@ -160,9 +160,10 @@ const ChatPage: React.FC = () => {
 								!selectedUser || selectedUser.id !== message.senderId;
 							return {
 								...u,
-								unreadCount: shouldIncrementUnread && message.receiverId === user.id
-									? (u.unreadCount || 0) + 1
-									: 0,
+								unreadCount:
+									shouldIncrementUnread && message.receiverId === user.id
+										? (u.unreadCount || 0) + 1
+										: 0,
 								lastMessage: message,
 							};
 						}

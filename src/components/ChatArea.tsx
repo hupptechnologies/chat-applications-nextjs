@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, ListItem, Typography } from '@mui/material';
 import { UserAttributes } from '@/interface/User';
 import { ChatMessageAttributes } from '@/interface/chatMessage';
@@ -34,6 +34,17 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 	onSendMessage,
 }) => {
 	const [showContactInfo, setShowContactInfo] = useState(false);
+	const messagesEndRef = useRef<HTMLDivElement>(null);
+
+	// Function to scroll to bottom
+	const scrollToBottom = () => {
+		messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+	};
+
+	// Scroll to bottom when messages change or selected user changes
+	useEffect(() => {
+		scrollToBottom();
+	}, [messages, selectedUser]);
 
 	// Group messages by date with custom labels
 	const groupMessagesByDate = (messages: ChatMessageAttributes[]) => {
@@ -164,6 +175,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 								))}
 							</React.Fragment>
 						))}
+						<div ref={messagesEndRef} />
 					</ChatMessages>
 
 					<InputContainer>

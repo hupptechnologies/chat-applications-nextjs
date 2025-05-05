@@ -1,40 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# Chat Application with Next.js
+
+A modern real-time chat application built with Next.js, featuring Material-UI, Socket.IO, and TypeScript.
+
+## Features
+
+- Real-time messaging using Socket.IO
+- Message status tracking (delivered/read)
+- Online/offline user status
+- Unread message count tracking
+- User search functionality
+- Modern UI with Material-UI components
+- Form handling with Formik and Yup validation
+- Protected and public routes
+- Responsive dashboard layout
+- TypeScript for type safety
+- API routes for backend functionality
+
+## Tech Stack
+
+- **Frontend Framework**: Next.js 15.2.0
+- **UI Library**: Material-UI (@mui/material)
+- **State Management**: React Context
+- **Form Handling**: Formik with Yup validation
+- **Real-time Communication**: Socket.IO
+- **HTTP Client**: Axios
+- **Language**: TypeScript
+- **Styling**: Emotion (@emotion/react, @emotion/styled)
+
+## Prerequisites
+
+- Node.js (Latest LTS version recommended)
+- npm or yarn package manager
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
+```bash
+git clone [your-repository-url]
+cd chat-applications-nextjs
+```
 
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Run the development server:
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+4. Open [http://localhost:3000](http://localhost:3000) with your browser to see the application.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+```
+src/
+├── components/     # Reusable UI components (Sidebar, Header, ChatArea, etc.)
+├── context/       # React context providers
+├── interface/     # TypeScript interfaces and types
+├── pages/         # Next.js pages and API routes
+├── services/      # API and Socket.IO service integrations
+├── styles/        # Global styles and CSS
+├── theme/         # Material-UI theme configuration
+└── utils/         # Utility functions and helpers
+```
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Key Components
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Authentication**: Login and signup pages with form validation
+- **Dashboard**: Protected layout for authenticated users
+- **Chat Interface**: 
+  - Real-time messaging
+  - Message status indicators
+  - User online/offline status
+  - Unread message tracking
+  - User search functionality
+- **Socket Integration**: Real-time communication and status updates
 
-## Learn More
+## Available Scripts
 
-To learn more about Next.js, take a look at the following resources:
+- `npm run dev` - Start development server
+- `npm run build` - Build production application
+- `npm run start` - Start production server
+- `npm run lint` - Run ESLint for code linting
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+## Development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application uses ESLint and Prettier for code quality and formatting. The configuration files are:
+- `.eslintrc.js` - ESLint configuration
+- `.prettierrc` - Prettier configuration
 
-## Deploy on Vercel
+## License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+This project is licensed under the MIT License - see the LICENSE file for details.
