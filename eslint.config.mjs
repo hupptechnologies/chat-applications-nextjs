@@ -18,7 +18,7 @@ export default tseslint.config(
 			'@next/next': nextPlugin,
 		},
 		rules: {
-			'@typescript-eslint/no-explicit-any': 'off',
+			'@typescript-eslint/no-explicit-any': 'on',
 			quotes: ['error', 'single', { avoidEscape: true }],
 			semi: ['error', 'always'],
 			'no-mixed-spaces-and-tabs': ['error', 'smart-tabs'],

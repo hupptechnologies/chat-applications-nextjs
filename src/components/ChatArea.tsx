@@ -133,7 +133,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 				<>
 					<ChatHeader onClick={() => setShowContactInfo(true)}>
 						<ChatAvatar>{selectedUser.userName.charAt(0)}</ChatAvatar>
-						<ChatUserName variant="h6">{selectedUser.userName}</ChatUserName>
+						<ChatUserName variant="h6" sx={{ fontWeight: 600, fontSize: '1.1rem' }}>{selectedUser.userName}</ChatUserName>
 					</ChatHeader>
 					<ChatMessages>
 						{groupedMessages.map((group, index) => (
@@ -149,20 +149,13 @@ const ChatArea: React.FC<ChatAreaProps> = ({
 									<ListItem
 										key={msg.id}
 										sx={{
-											justifyContent:
-												msg.senderId === user.id ? 'flex-end' : 'flex-start',
+											justifyContent: msg.senderId === user.id ? 'flex-end' : 'flex-start',
 											px: 0,
 										}}
 									>
-										<MessageBubble sent={msg.senderId === user.id}>
+										<MessageBubble sent={msg.senderId === user.id} sx={{ borderRadius: msg.senderId === user.id ? '18px 18px 4px 18px' : '18px 18px 18px 4px', background: msg.senderId === user.id ? '#e3f2fd' : '#f5f5f5' }}>
 											<MessageText>{msg.content}</MessageText>
-											<Box
-												sx={{
-													display: 'flex',
-													alignItems: 'center',
-													justifyContent: 'flex-end',
-												}}
-											>
+											<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', mt: 0.5 }}>
 												<MessageTimestamp>
 													{formatTime(new Date(msg.sentAt))}
 												</MessageTimestamp>

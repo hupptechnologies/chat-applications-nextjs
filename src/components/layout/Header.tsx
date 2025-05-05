@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
 import { Avatar, IconButton, Menu, MenuItem, Typography } from '@mui/material';
-import { ExitToApp, Menu as MenuIcon } from '@mui/icons-material';
+import { ExitToApp } from '@mui/icons-material';
 import { useAuth } from '@/context/AuthContext';
 import {
 	HeaderAppBar,
 	HeaderToolbar,
-	MenuIconButton,
 	UserInfoBox,
 } from '@/styles/DashboardLayout';
-
 interface HeaderProps {
 	onDrawerToggle: () => void;
 }
@@ -16,6 +15,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
 	const { user, logout } = useAuth();
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+	const router = useRouter();
 
 	const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
 		setAnchorEl(event.currentTarget);
@@ -30,26 +30,15 @@ const Header: React.FC<HeaderProps> = ({ onDrawerToggle }) => {
 	};
 
 	return (
-		<HeaderAppBar position="fixed">
+		<HeaderAppBar position="fixed" elevation={1}>
 			<HeaderToolbar>
-				<MenuIconButton
-					color="inherit"
-					aria-label="open drawer"
-					edge="start"
-					onClick={onDrawerToggle}
-				>
-					<MenuIcon />
-				</MenuIconButton>
-				<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-					Chat App
+				<Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1, fontWeight: 700, letterSpacing: 0.5, color: '#222' }}>
+					{router.pathname === '/chat' ? 'Private Messaging' : 'Dashboard'}
 				</Typography>
 				<UserInfoBox>
-					<Typography variant="body1" sx={{ mr: 2 }}>
-						{user?.userName}
-					</Typography>
 					{user?.userName && (
-						<IconButton color="inherit" onClick={handleMenuClick}>
-							<Avatar>{user.userName.charAt(0)}</Avatar>
+						<IconButton color="inherit" onClick={handleMenuClick} sx={{ ml: 1 }}>
+							<Avatar sx={{ bgcolor: '#1976d2' }}>{user.userName.charAt(0)}</Avatar>
 						</IconButton>
 					)}
 					<Menu

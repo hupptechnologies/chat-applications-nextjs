@@ -1,5 +1,5 @@
 import React from 'react';
-import { Badge, Divider, IconButton } from '@mui/material';
+import { Badge, Divider, IconButton, Box, Typography } from '@mui/material';
 import { Search } from '@mui/icons-material';
 import MessageStatus from './MessageStatus';
 import UserProfileModal from './UserProfileModal';
@@ -60,7 +60,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 	return (
 		<SidebarContainer>
 			<SidebarHeader>
-				<SidebarTitle>Chats</SidebarTitle>
+				<SidebarTitle>Chat</SidebarTitle>
 				<UserProfileButton onClick={() => setShowProfileModal(true)}>
 					<UserProfileAvatar>
 						{currentUser?.userName.charAt(0)}
@@ -72,7 +72,7 @@ const ChatSidebar: React.FC<ChatSidebarProps> = ({
 					<Search fontSize="small" />
 				</IconButton>
 				<SearchInput
-					placeholder="Search or start new chat"
+					placeholder="Search name"
 					onChange={handleSearchUser}
 				/>
 			</SearchContainer>

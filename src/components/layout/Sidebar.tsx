@@ -1,8 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { Box, List, ListItemText, Toolbar } from '@mui/material';
+import { Box, List, ListItemText, Toolbar, ListItemIcon } from '@mui/material';
 import { SidebarDrawer, SidebarListItemButton } from '@/styles/DashboardLayout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import ChatIcon from '@mui/icons-material/Chat';
 
 interface SidebarProps {
 	mobileOpen: boolean;
@@ -10,9 +12,8 @@ interface SidebarProps {
 }
 
 const menuItems = [
-	{ title: 'Dashboard', to: '/' },
-	{ title: 'Users', to: '/users' },
-	{ title: 'Chat', to: '/chat' },
+	{ title: 'Dashboard', to: '/', icon: <DashboardIcon /> },
+	{ title: 'Chat', to: '/chat', icon: <ChatIcon /> },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onDrawerToggle }) => {
@@ -23,8 +24,9 @@ const Sidebar: React.FC<SidebarProps> = ({ mobileOpen, onDrawerToggle }) => {
 			<Toolbar />
 			<List>
 				{menuItems.map((item, index) => (
-					<Link href={item.to} key={index} passHref>
+					<Link href={item.to} key={index} passHref legacyBehavior>
 						<SidebarListItemButton selected={router.pathname === item.to}>
+							<ListItemIcon>{item.icon}</ListItemIcon>
 							<ListItemText primary={item.title} />
 						</SidebarListItemButton>
 					</Link>
